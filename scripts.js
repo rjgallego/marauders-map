@@ -1,179 +1,168 @@
-let snakeX = 10;
-let snakeY = 250;
-let snakeL = 50;
-let dx = 10;
-let dy = 10;
-const lineWidth = 10;
+const delta = 1;
+const blockSide = 25;
 const snakeRects = [];
 let interval = null;
-let circleX;
-let circleY;
+const circle = {};
+const canvas = document.getElementById('board');
+const canvasCtx = canvas.getContext('2d');
+
 
 window.onload = function() {
-    document.addEventListener('keydown', function(event){
-        switch(event.code){
-            case 'ArrowDown':
-                changeDirection('d');
-                break;
-            case 'ArrowUp':
-                changeDirection('u');
-                break;
-            case 'ArrowRight':
-                changeDirection('r')
-                break;
-            case 'ArrowLeft':
-                changeDirection('l');
-                break;
-            default: 
-                return;
-        }
-    });
+    document.addEventListener('keydown', (event) => keyListener(event.code));
+    document.getElementById('start').addEventListener('click', () => interval = setInterval(run, 10))
 
-    // document.addEventListener('click', function(event) {
-    //     const pixelData = canvasCtx.getImageData(event.x, event.y, 10, 10).data;
-    //     console.log(pixelData);
-    // })
-
-    document.getElementById('start').addEventListener('click', function() {
-        interval = setInterval(start, 100);
-    })
-
-    canvas =  document.getElementById('board');
-    canvasCtx = canvas.getContext('2d');
-
-    snakeRects.push({
-        x: 50,
-        y: 250,
-        d: 'r'
-    })
-    snakeRects.push({
-        x: 40,
-        y: 250,
-        d: 'r'
-    })
-    snakeRects.push({
-        x: 30,
-        y: 250,
-        d: 'r'
-    })
-    snakeRects.push({
-        x: 20,
-        y: 250,
-        d: 'r'
-    })
+    initiateBlocks();
 
     drawRects();
     createNewCircle();
     drawCircle();
-
-    console.log(circleX + " " + circleY)
-
 }
 
-function start() {
+
+function initiateBlocks() {
+    const x = 85;
+    const y = 250;
+
+    for(let i = 0; i < 4; i++){
+        snakeRects.push({
+            x: x - (i * blockSide),
+            y: y,
+            d: 'r'
+        })
+    }
+}
+
+function run() {
     const head = snakeRects[0];
-    if(head.x === (canvas.width - 2*dx) || head.y === 0 || head.x === 0 || head.y === (canvas.height - 2*dy)){
-        clearInterval(interval);
+
+    if(isEdge(head.x, head.y)) {
+        endGame()
     }
 
-    if(
-        isColliding(head.x, head.y)
-    ){
-        console.log('true')
+    if(isColliding(head.x, head.y)){
         eatCircle()
     }
 
     snakeRects.forEach(block => {
         checkDirection(block);
+        move(block);
     })
+
+    canvasCtx.clearRect(0, 0, canvas.width, canvas.height)
     drawRects();
     drawCircle();
 }
 
+function endGame() {
+    clearInterval(interval);
+}
+
 function isColliding(x, y) {
-    return !(x > circleX + 10 || x < circleX - 10 || y > circleY + 10 || y < circleY - 10)
+    return !( x + blockSide > circle.x + circle.r 
+           || x + blockSide < circle.x - circle.r 
+           || y - (blockSide / 2) > circle.y + circle.r 
+           || y - (blockSide / 2) < circle.y - circle.r)
+}
+
+function keyListener(keyCode){
+    switch(keyCode){
+        case 'ArrowDown':
+            changeDirection('d');
+            break;
+        case 'ArrowUp':
+            changeDirection('u');
+            break;
+        case 'ArrowRight':
+            changeDirection('r')
+            break;
+        case 'ArrowLeft':
+            changeDirection('l');
+            break;
+        default: 
+            return;
+    }
 }
 
 function changeDirection(direction){
     snakeRects[0].d = direction;
 }
 
+function isEdge(x, y) {
+    return ( y - delta <= 0
+          || x - delta <= 0
+          || y + blockSide >= canvas.height
+          || x + blockSide >= canvas.width
+    )
+}
+
 function moveUp(block) {
-    block.y = block.y - dy;
+    block.y = block.y - delta;
 }
 
 function moveDown(block) {
-    block.y = block.y + dy;
+    block.y = block.y + delta;
 }
 
 function moveRight(block){
-    block.x = block.x + dx;
+    block.x = block.x + delta;
 }
 
 function moveLeft(block){
-    block.x = block.x - dx;
+    block.x = block.x - delta;
 }
 
 function drawRects() {
-    canvasCtx.clearRect(0, 0, canvas.width, canvas.height)
-
+    const img = document.getElementById('shoes');
+    
     snakeRects.forEach(line => {
-        canvasCtx.fillStyle = 'black';
-        canvasCtx.fillRect(line.x, line.y, 10, 10)
+        canvasCtx.drawImage(img, line.x, line.y, blockSide, blockSide)
     })
 }
 
 function eatCircle() {
-    const lastBlock = snakeRects[snakeRects.length - 1];
-    let newX, newY;
-    switch(lastBlock.d){
-        case 'u':
-            newX = lastBlock.x;
-            newY = lastBlock.y + 10;
-            break;
-        case 'd':
-            newX = lastBlock.x;
-            newY = lastBlock.y - 10;
-            break;
-        case 'r':
-            newX = lastBlock.x - 10;
-            newY = lastBlock.y;
-            break;
-        case 'l':
-            newX = lastBlock.x + 10;
-            newY = lastBlock.y;
-            break; 
-    }
-
-    if(lastBlock.d === 'u'){
-        newX = lastBlock.x;
-        newY = lastBlock.y + dy;
-    } else if(lastBlock.d === 'd'){
-
-    }
-
-    snakeRects.push({
-        x: newX,
-        y: newY,
-        d: lastBlock.d
-    })
 
     drawRects()
     createNewCircle()
     drawCircle()
 }
 
+function addBlock(){
+    const lastBlock = snakeRects[snakeRects.length - 1];
+    const newBlock = {};
+
+    switch(lastBlock.d){
+        case 'u':
+            newBlock.x = lastBlock.x;
+            newBlock.y = lastBlock.y + blockSide;
+            break;
+        case 'd':
+            newBlock.x = lastBlock.x;
+            newBlock.y = lastBlock.y - blockSide;
+            break;
+        case 'r':
+            newBlock.x = lastBlock.x - blockSide;
+            newBlock.y = lastBlock.y;
+            break;
+        case 'l':
+            newBlock.x = lastBlock.x + blockSide;
+            newBlock.y = lastBlock.y;
+            break; 
+    }
+
+    newBlock.d = lastBlock.d;
+    snakeRects.push(newBlock)
+}
+
 function createNewCircle(){
-    circleX = parseInt(Math.random() * (canvas.width-10));
-    circleY = parseInt(Math.random() * (canvas.height + 10));
+    circle.x = parseInt(Math.random() * (canvas.width - (2 * circle.r)));
+    circle.y = parseInt(Math.random() * (canvas.height - (2 * circle.r)));
+    circle.r = 12.5;
 } 
 
 function drawCircle(){
-//    const pixelData = canvasCtx.getImageData(circleX, circleY, 10, 10).data;
-
     canvasCtx.beginPath();
     canvasCtx.fillStyle = 'red';
-    canvasCtx.arc(circleX, circleY, 5, 0, 2 * Math.PI);
+    canvasCtx.arc(circle.x, circle.y, circle.r, 0, 2 * Math.PI);
     canvasCtx.fill();
 }
 
@@ -185,7 +174,6 @@ function checkDirection(block) {
             block.d = prevBlock.d;
         }
     }
-    move(block);
 }
 
 function move(block) {
