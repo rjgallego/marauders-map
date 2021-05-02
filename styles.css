@@ -1,0 +1,15 @@
+#main{
+    background-image: url('./background.jpg');
+    background-size: 100%;
+    background-repeat: no-repeat;
+    height: 580px;
+    width: 1100px;
+    border: 1px solid red;
+}
+#board{
+    position: relative;
+    top: 40px;
+    left: 475px;
+    border: 2px solid black;
+    border-radius: 5px;
+}
