@@ -1,23 +1,28 @@
 const delta = 1;
 const blockSide = 25;
 const snakeRects = [];
-let interval = null;
-const circle = {};
+
+let interval, head;
 const canvas = document.getElementById('board');
 const canvasCtx = canvas.getContext('2d');
+const symbolImg = document.getElementById('symbol');
+let symbol = createNewSymbol()
 
 
 window.onload = function() {
     document.addEventListener('keydown', (event) => keyListener(event.code));
     document.getElementById('start').addEventListener('click', () => interval = setInterval(run, 10))
 
-    initiateBlocks();
-
-    drawRects();
-    createNewCircle();
-    drawCircle();
+    newGame()
 }
 
+function newGame(){
+    initiateBlocks();
+    symbol = createNewSymbol();
+
+    drawRects();
+    canvasCtx.drawImage(symbolImg, symbol.x, symbol.y, blockSide, blockSide)
+}
 
 function initiateBlocks() {
     const x = 85;
@@ -30,17 +35,18 @@ function initiateBlocks() {
             d: 'r'
         })
     }
+
+    head = snakeRects[0]
 }
 
 function run() {
-    const head = snakeRects[0];
-
     if(isEdge(head.x, head.y)) {
         endGame()
     }
 
-    if(isColliding(head.x, head.y)){
-        eatCircle()
+    if(isHittingSymbol(head.x, head.y)){
+        addBlock()
+        symbol = createNewSymbol()
     }
 
     snakeRects.forEach(block => {
@@ -49,19 +55,20 @@ function run() {
     })
 
     canvasCtx.clearRect(0, 0, canvas.width, canvas.height)
+    canvasCtx.drawImage(symbolImg, symbol.x, symbol.y, blockSide, blockSide)
+
     drawRects();
-    drawCircle();
 }
 
 function endGame() {
     clearInterval(interval);
 }
 
-function isColliding(x, y) {
-    return !( x + blockSide > circle.x + circle.r 
-           || x + blockSide < circle.x - circle.r 
-           || y - (blockSide / 2) > circle.y + circle.r 
-           || y - (blockSide / 2) < circle.y - circle.r)
+function isHittingSymbol(x, y) {
+    return !( x + blockSide < symbol.x
+           || x > symbol.x + blockSide
+           || y + blockSide < symbol.y
+           || y > symbol.y + blockSide);
 }
 
 function keyListener(keyCode){
@@ -95,35 +102,10 @@ function isEdge(x, y) {
     )
 }
 
-function moveUp(block) {
-    block.y = block.y - delta;
-}
-
-function moveDown(block) {
-    block.y = block.y + delta;
-}
-
-function moveRight(block){
-    block.x = block.x + delta;
-}
-
-function moveLeft(block){
-    block.x = block.x - delta;
-}
-
 function drawRects() {
-    const img = document.getElementById('shoes');
-    
     snakeRects.forEach(line => {
-        canvasCtx.drawImage(img, line.x, line.y, blockSide, blockSide)
+        canvasCtx.drawImage(document.getElementById(`shoes-${line.d}`), line.x, line.y, blockSide, blockSide);
     })
-}
-
-function eatCircle() {
-
-    drawRects()
-    createNewCircle()
-    drawCircle()
 }
 
 function addBlock(){
@@ -153,18 +135,12 @@ function addBlock(){
     snakeRects.push(newBlock)
 }
 
-function createNewCircle(){
-    circle.x = parseInt(Math.random() * (canvas.width - (2 * circle.r)));
-    circle.y = parseInt(Math.random() * (canvas.height - (2 * circle.r)));
-    circle.r = 12.5;
+function createNewSymbol(){
+    return {
+        x: parseInt(Math.random() * (canvas.width - blockSide)),
+        y: parseInt(Math.random() * (canvas.height - blockSide))
+    }
 } 
-
-function drawCircle(){
-    canvasCtx.beginPath();
-    canvasCtx.fillStyle = 'red';
-    canvasCtx.arc(circle.x, circle.y, circle.r, 0, 2 * Math.PI);
-    canvasCtx.fill();
-}
 
 function checkDirection(block) {
     const index = snakeRects.indexOf(block);
@@ -179,16 +155,16 @@ function checkDirection(block) {
 function move(block) {
     switch(block.d){
         case 'u':
-            moveUp(block);
+            block.y = block.y - delta;
             break;
         case 'd':
-            moveDown(block);
+            block.y = block.y + delta;
             break;
         case 'l':
-            moveLeft(block);
+            block.x = block.x - delta;
             break;
         case 'r':
-            moveRight(block);
+            block.x = block.x + delta;
             break;
     }
 }
