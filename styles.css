@@ -13,7 +13,7 @@ body{
 #board{
     position: relative;
     top: 45px;
-    left: 495px;
+    left: 590px;
     border: 2px solid black;
     border-radius: 5px;
     background-color: rgba(250, 250, 250, 0.20)
@@ -24,29 +24,27 @@ button {
     font-family: 'Tangerine', cursive;
     border: 1px solid black;
     background-color: rgba(250,250,250, 0.7);
-    font-size: 25px;
     cursor: pointer;
+    font-family: 'Cormorant Garamond', serif;
 }
 
 #start{
-    left: 450px;
-    bottom: 400px;
+    right: 20px;
     padding: 10px 30px;
     font-size: 25px;
     box-shadow: 1px 1px 1px 1px black;
 }
 
 #new-game{
-    font-size: 30px;
+    font-size: 20px;
     padding: 5px 10px;
 }
 
-img{
+.placeholder{
     display: none;
 }
 
 #score {
-    display: block;
     position: relative;
     font-size: 30px;
     margin: 0;
@@ -61,10 +59,10 @@ h3{
 #window {
     width: 350px;
     height: 150px;
-    background-color: rgba(139, 71, 58, 0.8);
+    background-color: rgb(211, 192, 170);
     position: relative;
     bottom: 350px;
-    left: 670px;
+    left: 660px;
     box-shadow: 2px 2px 2px 2px black;
     text-align: center;
     display: flex;
@@ -74,14 +72,16 @@ h3{
 }
 
 #message{
-    font-size: 35px;
+    font-size: 25px;
     margin: 15px 0;
+    color: rgba(104, 52, 42, 0.9);
+    font-weight: bold;
 }
 
 .score-div{
     display: flex;
     position: relative;
-    bottom: 390px;
+    bottom: 170px;
     left: 450px;
     width: 150px;
     align-items: center;
