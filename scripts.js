@@ -1,6 +1,8 @@
 const delta = 1;
 const blockSide = 25;
 const snakeRects = [];
+let score = 0;
+let highScore = 0;
 
 let interval, head;
 const canvas = document.getElementById('board');
@@ -8,12 +10,25 @@ const canvasCtx = canvas.getContext('2d');
 const symbolImg = document.getElementById('symbol');
 let symbol = createNewSymbol()
 
+const startButton = document.getElementById('start');
+const newButton = document.getElementById('new-game');
 
 window.onload = function() {
     document.addEventListener('keydown', (event) => keyListener(event.code));
-    document.getElementById('start').addEventListener('click', () => interval = setInterval(run, 10))
 
-    newGame()
+    startButton.addEventListener('click', () => {
+        interval = setInterval(run, 10)
+        startButton.disabled = false;
+    })
+
+    newButton.addEventListener('click', () => {
+        document.getElementById('window').style = "display: none";
+        startButton.disabled = false;
+
+        newGame()
+    })
+
+    startButton.disabled = true;
 }
 
 function newGame(){
@@ -45,10 +60,13 @@ function run() {
     }
 
     if(isHittingSymbol(head.x, head.y)){
-        addBlock()
-        symbol = createNewSymbol()
+        eatSymbol()
     }
 
+    drawBoard()
+}
+
+function drawBoard() {
     snakeRects.forEach(block => {
         checkDirection(block);
         move(block);
@@ -62,6 +80,37 @@ function run() {
 
 function endGame() {
     clearInterval(interval);
+    updateScore(true)
+    updateWindow();
+
+    startButton.disabled = true;
+}
+
+function updateWindow() {
+    document.getElementById('window').style = "display: flex";
+    document.getElementById('message').textContent = "Mischief Managed!"
+}
+
+function updateScore(isEnd) {
+    if(isEnd) {
+        highScore = score > highScore ? score : highScore;
+        score = 0;
+    
+        document.getElementById("score").textContent = `: ${score}`;
+        document.getElementById("high-score").textContent = `: ${highScore}`;
+
+        return;
+    }
+
+    score = score + 1;
+    document.getElementById("score").textContent = `: ${score}`;
+}
+
+function eatSymbol() {
+    symbol = createNewSymbol()
+
+    addBlock()
+    updateScore(false);
 }
 
 function isHittingSymbol(x, y) {
