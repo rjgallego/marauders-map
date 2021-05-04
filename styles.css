@@ -10,13 +10,14 @@ body{
     width: 1100px;
     margin: auto;
 }
+
 #board{
     position: relative;
     top: 45px;
     left: 590px;
-    border: 2px solid black;
-    border-radius: 5px;
-    background-color: rgba(250, 250, 250, 0.20)
+    border: 1px solid black;
+    background-color: rgba(250, 250, 250, 0.20);
+    box-shadow: 2px 2px 2px 2px black;
 }
 
 button {
@@ -44,16 +45,10 @@ button {
     display: none;
 }
 
-#score {
-    position: relative;
-    font-size: 30px;
-    margin: 0;
-}
-
 h3{
-    font-size: 30px;
-    margin: 0 5px;
-    font-family: serif;
+    font-size: 40px;
+    margin: 0;
+    font-family: 'Cormorant Garamond', serif;
 }
 
 #window {
@@ -61,10 +56,9 @@ h3{
     height: 150px;
     background-color: rgb(211, 192, 170);
     position: relative;
-    bottom: 350px;
+    bottom: 400px;
     left: 660px;
     box-shadow: 2px 2px 2px 2px black;
-    text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
