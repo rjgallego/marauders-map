@@ -11,25 +11,31 @@
   <link href="https://fonts.googleapis.com/css2?family=Tangerine&display=swap" rel="stylesheet">
 
   <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Tangerine&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Tangerine:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="styles.css">
 </head>
   <div id="main">
-    <img id="shoes-u" width="10" height="10" src="./images/shoes-u.png">
-    <img id="shoes-d" width="10" height="10" src="./images/shoes-d.png">
-    <img id="shoes-l" width="10" height="10" src="./images/shoes-l.png">
-    <img id="shoes-r" width="10" height="10" src="./images/shoes-r.png">
-    <img id="symbol" width="10" height="10" src="./images/hallows.png">
+    <img id="shoes-u" class="placeholder" width="10" height="10" src="./images/shoes-u.png">
+    <img id="shoes-d" class="placeholder" width="10" height="10" src="./images/shoes-d.png">
+    <img id="shoes-l" class="placeholder" width="10" height="10" src="./images/shoes-l.png">
+    <img id="shoes-r" class="placeholder" width="10" height="10" src="./images/shoes-r.png">
+    <img id="symbol" class="placeholder" width="10" height="10" src="./images/hallows.png">
 
-    <button id="start">Start</button>
     <canvas id="board" width="475" height="500"></canvas>
-    <div id="window">
-      <p id="message">I solemly swear I am up to no good</p>
-      <button id="new-game">New game</button>
+    <button id="start">Start</button>
+    <div class="score-div">
+      <img width="35" height="35" src="./images/hallows.png">
+      <h3 id="score">: 0</h3>
     </div>
     <div class="score-div">
-      <img id="score" width="35" height="35" src="./images/hallows.png">
-      <h3>:</h3>
+      <img id="trophy" width="35" height="35" src="./images/trophy.png">
+      <h3 id="high-score">: 0</h3>
+    </div>
+    <div id="window">
+      <p id="message">I solemly swear that I am up to no good</p>
+      <button id="new-game">New Game</button>
     </div>
     <script src="scripts.js"></script>
   </div>
