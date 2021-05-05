@@ -1,7 +1,7 @@
 # Maurader's Map
 ## A snake game written in HTML, CSS, and Javascript
 
-Try it out [here]()
+Try it out [here](https://rjgallego.github.io/marauders-map/)!
 
 ![](screenshot.PNG)
 
