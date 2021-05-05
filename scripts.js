@@ -1,6 +1,6 @@
 const delta = 1;
-const blockSide = 25;
-const snakeRects = [];
+const imgSide = 25;
+const footprints = [];
 let score = 0;
 let highScore = 0;
 
@@ -8,7 +8,7 @@ let interval, head;
 const canvas = document.getElementById('board');
 const canvasCtx = canvas.getContext('2d');
 const symbolImg = document.getElementById('symbol');
-let symbol = createNewSymbol()
+let symbol;
 
 const startButton = document.getElementById('start');
 const newButton = document.getElementById('new-game');
@@ -32,50 +32,54 @@ window.onload = function() {
 }
 
 function newGame(){
-    initiateBlocks();
+    canvasCtx.clearRect(0, 0, canvas.width, canvas.height)
+
+    initiateImgs();
     symbol = createNewSymbol();
 
-    drawRects();
-    canvasCtx.drawImage(symbolImg, symbol.x, symbol.y, blockSide, blockSide)
+    drawImgs();
+    canvasCtx.drawImage(symbolImg, symbol.x, symbol.y, imgSide, imgSide)
 }
 
-function initiateBlocks() {
+function initiateImgs() {
     const x = 85;
     const y = 250;
 
     for(let i = 0; i < 4; i++){
-        snakeRects.push({
-            x: x - (i * blockSide),
+        footprints.push({
+            x: x - (i * imgSide),
             y: y,
             d: 'r'
         })
     }
 
-    head = snakeRects[0]
+    head = footprints[0]
 }
 
 function run() {
-    if(isEdge(head.x, head.y)) {
+
+    if(isEdge(head.x, head.y) || isHittingSelf()) {
         endGame()
     }
 
-    if(isHittingSymbol(head.x, head.y)){
+    if(isColliding(head.x, head.y, symbol.x, symbol.y)){
         eatSymbol()
     }
 
     drawBoard()
+
 }
 
 function drawBoard() {
-    snakeRects.forEach(block => {
-        checkDirection(block);
-        move(block);
+    footprints.forEach(img => {
+        checkDirection(img);
+        move(img);
     })
 
     canvasCtx.clearRect(0, 0, canvas.width, canvas.height)
-    canvasCtx.drawImage(symbolImg, symbol.x, symbol.y, blockSide, blockSide)
+    canvasCtx.drawImage(symbolImg, symbol.x, symbol.y, imgSide, imgSide)
 
-    drawRects();
+    drawImgs();
 }
 
 function endGame() {
@@ -109,15 +113,26 @@ function updateScore(isEnd) {
 function eatSymbol() {
     symbol = createNewSymbol()
 
-    addBlock()
+    addImg()
     updateScore(false);
 }
 
-function isHittingSymbol(x, y) {
-    return !( x + blockSide < symbol.x
-           || x > symbol.x + blockSide
-           || y + blockSide < symbol.y
-           || y > symbol.y + blockSide);
+function isColliding(firstX, firstY, secondX, secondY) {
+    return !( firstX + imgSide < secondX
+           || firstX > secondX + imgSide
+           || firstY + imgSide < secondY
+           || firstY > secondY + imgSide);
+}
+
+function isHittingSelf() {
+    let img;
+    for(let i = 3; i < footprints.length; i++){
+        img = footprints[i];
+        if(isColliding(head.x, head.y, img.x, img.y)){
+            return true;
+        }
+    }
+    return false;
 }
 
 function keyListener(keyCode){
@@ -140,80 +155,93 @@ function keyListener(keyCode){
 }
 
 function changeDirection(direction){
-    snakeRects[0].d = direction;
+    head.d = direction;
 }
 
 function isEdge(x, y) {
     return ( y - delta <= 0
           || x - delta <= 0
-          || y + blockSide >= canvas.height
-          || x + blockSide >= canvas.width
+          || y + imgSide >= canvas.height
+          || x + imgSide >= canvas.width
     )
 }
 
-function drawRects() {
-    snakeRects.forEach(line => {
-        canvasCtx.drawImage(document.getElementById(`shoes-${line.d}`), line.x, line.y, blockSide, blockSide);
+function drawImgs() {
+    footprints.forEach(line => {
+        canvasCtx.drawImage(document.getElementById(`shoes-${line.d}`), line.x, line.y, imgSide, imgSide);
     })
 }
 
-function addBlock(){
-    const lastBlock = snakeRects[snakeRects.length - 1];
-    const newBlock = {};
+function addImg(){
+    const lastImg = footprints[footprints.length - 1];
+    const newImg = {};
 
-    switch(lastBlock.d){
+    switch(lastImg.d){
         case 'u':
-            newBlock.x = lastBlock.x;
-            newBlock.y = lastBlock.y + blockSide;
+            newImg.x = lastImg.x;
+            newImg.y = lastImg.y + imgSide;
             break;
         case 'd':
-            newBlock.x = lastBlock.x;
-            newBlock.y = lastBlock.y - blockSide;
+            newImg.x = lastImg.x;
+            newImg.y = lastImg.y - imgSide;
             break;
         case 'r':
-            newBlock.x = lastBlock.x - blockSide;
-            newBlock.y = lastBlock.y;
+            newImg.x = lastImg.x - imgSide;
+            newImg.y = lastImg.y;
             break;
         case 'l':
-            newBlock.x = lastBlock.x + blockSide;
-            newBlock.y = lastBlock.y;
+            newImg.x = lastImg.x + imgSide;
+            newImg.y = lastImg.y;
             break; 
     }
 
-    newBlock.d = lastBlock.d;
-    snakeRects.push(newBlock)
+    newImg.d = lastImg.d;
+    footprints.push(newImg)
 }
 
 function createNewSymbol(){
+    let x, y;
+    let isIntersecting = true;
+    while(isIntersecting){
+        x = parseInt(Math.random() * (canvas.width - imgSide))
+        y = parseInt(Math.random() * (canvas.height - imgSide))
+        for(let i = 0; i < footprints.length; i++){
+            if(isColliding(footprints[i].x, footprints[i].y, x, y)){
+                isIntersecting = false;
+                break;
+            }
+        }
+    }
+
     return {
-        x: parseInt(Math.random() * (canvas.width - blockSide)),
-        y: parseInt(Math.random() * (canvas.height - blockSide))
+        x: parseInt(Math.random() * (canvas.width - imgSide)),
+        y: parseInt(Math.random() * (canvas.height - imgSide))
     }
 } 
 
-function checkDirection(block) {
-    const index = snakeRects.indexOf(block);
+function checkDirection(img) {
+    const index = footprints.indexOf(img);
     if(index !== 0){
-        const prevBlock = snakeRects[index - 1];
-        if(block.d !== prevBlock.d && (block.x === prevBlock.x || block.y === prevBlock.y)){
-            block.d = prevBlock.d;
+        const prevImg = footprints[index - 1];
+        if(img.d !== prevImg.d && (img.x === prevImg.x || img.y === prevImg.y)){
+            img.d = prevImg.d;
         }
     }
 }
 
-function move(block) {
-    switch(block.d){
+function move(img) {
+    switch(img.d){
         case 'u':
-            block.y = block.y - delta;
+            img.y = img.y - delta;
             break;
         case 'd':
-            block.y = block.y + delta;
+            img.y = img.y + delta;
             break;
         case 'l':
-            block.x = block.x - delta;
+            img.x = img.x - delta;
             break;
         case 'r':
-            block.x = block.x + delta;
+            img.x = img.x + delta;
             break;
     }
 }
