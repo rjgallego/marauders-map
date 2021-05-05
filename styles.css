@@ -1,5 +1,5 @@
 body{
-    background-color: rgba(104, 52, 42, 0.9);
+    background-color: rgba(0,0,0,0.8);
     font-family: 'Tangerine', cursive;
 }
 #main{
@@ -75,7 +75,7 @@ h3{
 .score-div{
     display: flex;
     position: relative;
-    bottom: 170px;
+    bottom: 180px;
     left: 450px;
     width: 150px;
     align-items: center;
