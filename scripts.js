@@ -1,6 +1,6 @@
 const delta = 1;
 const imgSide = 25;
-const footprints = [];
+let footprints;
 let score = 0;
 let highScore = 0;
 
@@ -18,7 +18,7 @@ window.onload = function() {
 
     startButton.addEventListener('click', () => {
         interval = setInterval(run, 10)
-        startButton.disabled = false;
+        startButton.disabled = true;
     })
 
     newButton.addEventListener('click', () => {
@@ -44,6 +44,7 @@ function newGame(){
 function initiateImgs() {
     const x = 85;
     const y = 250;
+    footprints = [];
 
     for(let i = 0; i < 4; i++){
         footprints.push({
@@ -92,7 +93,7 @@ function endGame() {
 
 function updateWindow() {
     document.getElementById('window').style = "display: flex";
-    document.getElementById('message').textContent = "Mischief Managed!"
+    document.getElementById('message').textContent = "Mischief Managed"
 }
 
 function updateScore(isEnd) {
@@ -199,19 +200,21 @@ function addImg(){
     footprints.push(newImg)
 }
 
+function checkSymbolLoc(x, y){
+    footprints.forEach(img => {
+        if(isColliding(img.x, img.y, x, y)){
+            return true;
+        }
+    })
+    return false;
+}
+
 function createNewSymbol(){
     let x, y;
-    let isIntersecting = true;
-    while(isIntersecting){
+    do{
         x = parseInt(Math.random() * (canvas.width - imgSide))
         y = parseInt(Math.random() * (canvas.height - imgSide))
-        for(let i = 0; i < footprints.length; i++){
-            if(isColliding(footprints[i].x, footprints[i].y, x, y)){
-                isIntersecting = false;
-                break;
-            }
-        }
-    }
+    } while(checkSymbolLoc(x, y))
 
     return {
         x: parseInt(Math.random() * (canvas.width - imgSide)),
